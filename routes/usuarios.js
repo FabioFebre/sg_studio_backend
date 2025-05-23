@@ -1,56 +1,44 @@
-//routes/usuarios.js
 const express = require('express');
 const router = express.Router();
-const db = require('../db');
+const { Usuario } = require('../models');
 
-// GET: listar todos los usuarios
+// Listar todos los usuarios
 router.get('/', async (req, res) => {
-  try {
-    const resultado = await db.query('SELECT * FROM public.usuarios');
-    res.json(resultado.rows);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  const usuarios = await Usuario.findAll();
+  res.json(usuarios);
 });
 
-
-router.get('/login', (req, res) => {
-  res.send('Login (GET): esta ruta sirve solo para pruebas o formularios HTML');
-});
-
-
-// POST: agregar nuevo usuario
+// Crear un nuevo usuario
 router.post('/', async (req, res) => {
-  const { nombre, apellido, email, password } = req.body;
   try {
-    const resultado = await db.query(
-      'INSERT INTO public.usuarios (nombre, apellido, email, password) VALUES ($1, $2, $3, $4) RETURNING *',
-      [nombre, apellido, email, password]
-    );
-    res.status(201).json(resultado.rows[0]);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+    const usuario = await Usuario.create(req.body);
+    res.status(201).json(usuario);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
   }
 });
 
-// POST: login
+// POST /usuarios/login
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
-
   try {
-    const resultado = await db.query(
-      'SELECT * FROM public.usuarios WHERE email = $1 AND password = $2',
-      [email, password]
-    );
-
-    if (resultado.rows.length > 0) {
-      res.json({ mensaje: 'Login exitoso', usuario: resultado.rows[0] });
-    } else {
-      res.status(401).json({ mensaje: 'Credenciales incorrectas' });
+    const usuario = await Usuario.findOne({ where: { email } });
+    if (!usuario) {
+      return res.status(401).json({ error: 'Credenciales inválidas' });
     }
-  } catch (err) {
-    res.status(500).json({ mensaje: 'Error en el servidor', error: err.message });
+
+    // Comparación simple sin hash:
+    if (usuario.password !== password) {
+      return res.status(401).json({ error: 'Credenciales inválidas' });
+    }
+
+    const { password: pw, ...usuarioSinPassword } = usuario.toJSON();
+    res.json({ usuario: usuarioSinPassword });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error en el servidor' });
   }
 });
+
 
 module.exports = router;
