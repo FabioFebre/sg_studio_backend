@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 module.exports = {
   development: {
     username: 'sg_studio_backend_user',
@@ -6,6 +8,16 @@ module.exports = {
     host: 'dpg-d0nrh73uibrs73c40i30-a.oregon-postgres.render.com',
     dialect: 'postgres',
     port: 5432,
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false
+      }
+    }
+  },
+  production: {
+    use_env_variable: 'DATABASE_URL',
+    dialect: 'postgres',
     dialectOptions: {
       ssl: {
         require: true,

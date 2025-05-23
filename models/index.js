@@ -7,7 +7,7 @@ const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || 'development';
 
 // Cambia esta línea para cargar de db/db.json
-const config = require(__dirname + '/../db/db.js')[env];
+const config = require(__dirname + '/../config/config.js')[env];
 
 const db = {};
 
