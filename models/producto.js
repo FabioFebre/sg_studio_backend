@@ -10,6 +10,7 @@ module.exports = (sequelize, DataTypes) => {
     nombre: DataTypes.STRING,
     descripcion: DataTypes.STRING,
     precio: DataTypes.FLOAT,   
+    imagen: DataTypes.STRING,
     categoriaId: DataTypes.INTEGER, // Agrega esta línea para que Sequelize sepa que existe esta columna
   }, {
     sequelize,
