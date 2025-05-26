@@ -1,17 +1,37 @@
 const express = require('express');
 const router = express.Router();
 const { Usuario } = require('../models');
+const bcrypt = require('bcrypt');
 
 // Listar todos los usuarios
 router.get('/', async (req, res) => {
-  const usuarios = await Usuario.findAll();
-  res.json(usuarios);
+  try {
+    const usuarios = await Usuario.findAll();
+    console.log('Usuarios encontrados:', usuarios); // 👈 esto
+    res.json(usuarios);
+  } catch (error) {
+    console.error('Error al obtener usuarios:', error);
+    res.status(500).json({ error: 'Error al obtener los usuarios' });
+  }
 });
 
 // Crear un nuevo usuario
+// Crear un nuevo usuario
 router.post('/', async (req, res) => {
   try {
-    const usuario = await Usuario.create(req.body);
+    const { nombre, apellido, email, password, rol } = req.body;
+
+    // Encriptar la contraseña
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const usuario = await Usuario.create({
+      nombre,
+      apellido,
+      email,
+      password: hashedPassword,
+      rol: rol || 'usuario', // por defecto usuario
+    });
+
     res.status(201).json(usuario);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -27,8 +47,9 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ error: 'Credenciales inválidas' });
     }
 
-    // Comparación simple sin hash:
-    if (usuario.password !== password) {
+    // Compara la contraseña ingresada con la encriptada
+    const isPasswordValid = await bcrypt.compare(password, usuario.password);
+    if (!isPasswordValid) {
       return res.status(401).json({ error: 'Credenciales inválidas' });
     }
 

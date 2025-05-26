@@ -6,6 +6,7 @@ const db = require('./models');
 const cors = require('cors');
 app.use(cors());
 require('dotenv').config();
+console.log('Base de datos actual:', db.sequelize.config.database);
 
 
 db.sequelize.sync() 

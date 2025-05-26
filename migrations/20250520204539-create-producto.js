@@ -12,16 +12,20 @@ module.exports = {
       nombre: {
         type: Sequelize.STRING
       },
-        precio: {
+      precio: {
         type: Sequelize.FLOAT // o Sequelize.DECIMAL(10, 2) si quieres más precisión
       },
       descripcion: {
         type: Sequelize.STRING
       },
-      categoriaId: { // <-- campo nuevo
+      imagen: {
+        type: Sequelize.STRING,
+        allowNull: true // puedes ajustar esto según tu necesidad
+      },
+      categoriaId: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'Categoria', // nombre exacto de la tabla
+          model: 'Categoria', // asegúrate de que el nombre sea exacto
           key: 'id'
         },
         onUpdate: 'CASCADE',
@@ -38,6 +42,7 @@ module.exports = {
       }
     });
   },
+
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable('Productos');
   }
