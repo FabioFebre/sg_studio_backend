@@ -7,6 +7,8 @@ const cors = require('cors');
 app.use(cors());
 require('dotenv').config();
 console.log('Base de datos actual:', db.sequelize.config.database);
+const path = require('path');
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
 db.sequelize.sync() 
