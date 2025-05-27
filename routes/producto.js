@@ -5,27 +5,6 @@ const multer = require('multer');
 const path = require('path');
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const cloudinary = require('cloudinary').v2;
-const upload = require('../middlewares/upload');
-
-
-// Configuración desde variables de entorno
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key:    process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
-
-// Configura el storage en Cloudinary
-const storage = new CloudinaryStorage({
-  cloudinary,
-  params: {
-    folder: 'productos', // carpeta en Cloudinary
-    allowed_formats: ['jpg', 'jpeg', 'png'],
-  },
-});
-
-const upload = multer({ storage });
-
 
 
 // Crear producto
@@ -44,11 +23,10 @@ router.post('/', upload.single('imagen'), async (req, res) => {
 
     res.status(201).json(nuevoProducto);
   } catch (error) {
-    console.error('Error al crear producto:', error);
+    console.error(error);
     res.status(500).json({ error: 'Error al crear producto' });
   }
 });
-
 
 // Listar productos con su categoría
 router.get('/', async (req, res) => {
