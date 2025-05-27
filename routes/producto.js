@@ -5,7 +5,7 @@ const multer = require('multer');
 const path = require('path');
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const cloudinary = require('cloudinary').v2;
-
+const upload = require('../middlewares/upload');
 
 // Crear producto
 router.post('/', upload.single('imagen'), async (req, res) => {
