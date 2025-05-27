@@ -3,19 +3,25 @@ const router = express.Router();
 const { Producto, Categoria } = require('../models');
 const multer = require('multer');
 const path = require('path');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const cloudinary = require('cloudinary').v2;
 
 
+// Configura Cloudinary
+cloudinary.config({
+  cloud_name: 'Root',
+  api_key: '449239287681465',
+  api_secret: 'pbQlbSv9WitFR31fsfh6ZdICSg0'
+});
 
 
-
-// Configuración de almacenamiento para guardar imágenes
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads/'); // Carpeta donde se guardarán las imágenes
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, uniqueSuffix + path.extname(file.originalname)); // Ej: 23456789.jpg
+// Almacenamiento en Cloudinary
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'productos', // Puedes cambiar el nombre del folder
+    allowed_formats: ['jpg', 'png', 'jpeg'],
+    transformation: [{ width: 500, height: 500, crop: 'limit' }]
   }
 });
 
@@ -28,13 +34,15 @@ const upload = multer({ storage });
 router.post('/', upload.single('imagen'), async (req, res) => {
   try {
     const { nombre, descripcion, precio, categoriaId } = req.body;
-    const imagen = req.file ? req.file.filename : null;
+
+    // URL pública de Cloudinary
+    const imagen = req.file ? req.file.path : null;
 
     const nuevoProducto = await Producto.create({
       nombre,
       descripcion,
       precio,
-      imagen,
+      imagen, // Guarda la URL pública, no el nombre del archivo
       categoriaId
     });
 
@@ -44,6 +52,7 @@ router.post('/', upload.single('imagen'), async (req, res) => {
     res.status(500).json({ error: 'Error al crear producto' });
   }
 });
+
 
 // Listar productos con su categoría
 router.get('/', async (req, res) => {
