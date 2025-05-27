@@ -5,28 +5,26 @@ const multer = require('multer');
 const path = require('path');
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const cloudinary = require('cloudinary').v2;
+const upload = require('../middlewares/upload');
 
 
-// Configura Cloudinary
+// Configuración desde variables de entorno
 cloudinary.config({
-  cloud_name: 'Root',
-  api_key: '449239287681465',
-  api_secret: 'pbQlbSv9WitFR31fsfh6ZdICSg0'
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key:    process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-
-// Almacenamiento en Cloudinary
+// Configura el storage en Cloudinary
 const storage = new CloudinaryStorage({
-  cloudinary: cloudinary,
+  cloudinary,
   params: {
-    folder: 'productos', // Puedes cambiar el nombre del folder
-    allowed_formats: ['jpg', 'png', 'jpeg'],
-    transformation: [{ width: 500, height: 500, crop: 'limit' }]
-  }
+    folder: 'productos', // carpeta en Cloudinary
+    allowed_formats: ['jpg', 'jpeg', 'png'],
+  },
 });
 
 const upload = multer({ storage });
-
 
 
 
@@ -34,21 +32,19 @@ const upload = multer({ storage });
 router.post('/', upload.single('imagen'), async (req, res) => {
   try {
     const { nombre, descripcion, precio, categoriaId } = req.body;
-
-    // URL pública de Cloudinary
     const imagen = req.file ? req.file.path : null;
 
     const nuevoProducto = await Producto.create({
       nombre,
       descripcion,
       precio,
-      imagen, // Guarda la URL pública, no el nombre del archivo
+      imagen,
       categoriaId
     });
 
     res.status(201).json(nuevoProducto);
   } catch (error) {
-    console.error(error);
+    console.error('Error al crear producto:', error);
     res.status(500).json({ error: 'Error al crear producto' });
   }
 });
