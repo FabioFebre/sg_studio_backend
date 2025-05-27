@@ -1,14 +1,46 @@
 const express = require('express');
 const router = express.Router();
 const { Producto, Categoria } = require('../models');
+const multer = require('multer');
+
+
+
+
+
+// Configuración de almacenamiento para guardar imágenes
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/'); // Carpeta donde se guardarán las imágenes
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, uniqueSuffix + path.extname(file.originalname)); // Ej: 23456789.jpg
+  }
+});
+
+const upload = multer({ storage });
+
+
+
 
 // Crear producto
-router.post('/', async (req, res) => {
+router.post('/', upload.single('imagen'), async (req, res) => {
   try {
-    const producto = await Producto.create(req.body);
-    res.status(201).json(producto);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+    const { nombre, descripcion, precio, categoriaId } = req.body;
+    const imagen = req.file ? req.file.filename : null;
+
+    const nuevoProducto = await Producto.create({
+      nombre,
+      descripcion,
+      precio,
+      imagen,
+      categoriaId
+    });
+
+    res.status(201).json(nuevoProducto);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error al crear producto' });
   }
 });
 
