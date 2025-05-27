@@ -42,13 +42,19 @@ router.post('/', async (req, res) => {
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
   try {
+    console.log('Email recibido:', email);
+    console.log('Password recibido:', password);
+
     const usuario = await Usuario.findOne({ where: { email } });
+    console.log('Usuario encontrado:', usuario);
+
     if (!usuario) {
       return res.status(401).json({ error: 'Credenciales inválidas' });
     }
 
-    // Compara la contraseña ingresada con la encriptada
     const isPasswordValid = await bcrypt.compare(password, usuario.password);
+    console.log('¿Contraseña válida?', isPasswordValid);
+
     if (!isPasswordValid) {
       return res.status(401).json({ error: 'Credenciales inválidas' });
     }
