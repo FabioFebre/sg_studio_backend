@@ -61,5 +61,49 @@ router.post('/login', async (req, res) => {
   }
 });
 
+// Obtener un usuario por ID
+router.get('/:id', async (req, res) => {
+  try {
+    const usuario = await Usuario.findByPk(req.params.id);
+    if (!usuario) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+    res.json(usuario);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al obtener el usuario' });
+  }
+});
+
+
+// Actualizar un usuario por ID
+router.put('/:id', async (req, res) => {
+  try {
+    const usuario = await Usuario.findByPk(req.params.id);
+    if (!usuario) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+
+    const { nombre, apellido, email, password, rol } = req.body;
+
+    // Si viene una nueva contraseña, la encriptamos
+    if (password) {
+      usuario.password = await bcrypt.hash(password, 10);
+    }
+
+    // Actualizar otros campos si existen
+    if (nombre) usuario.nombre = nombre;
+    if (apellido) usuario.apellido = apellido;
+    if (email) usuario.email = email;
+    if (rol) usuario.rol = rol;
+
+    await usuario.save();
+
+    const { password: _, ...usuarioSinPassword } = usuario.toJSON();
+
+    res.json(usuarioSinPassword);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al actualizar el usuario' });
+  }
+});
 
 module.exports = router;
