@@ -3,9 +3,7 @@ const router = express.Router();
 const { Producto, Categoria } = require('../models');
 const multer = require('multer');
 const path = require('path');
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
-const cloudinary = require('cloudinary').v2;
-const upload = require('../middlewares/upload');
+
 
 // Crear producto
 router.post('/', upload.single('imagen'), async (req, res) => {
@@ -58,4 +56,38 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+// Editar un producto
+router.put('/:id', upload.single('imagen'), async (req, res) => {
+  try {
+    const producto = await Producto.findByPk(req.params.id);
+    if (!producto) {
+      return res.status(404).json({ error: 'Producto no encontrado' });
+    }
+
+    const { nombre, descripcion, precio, categoriaId } = req.body;
+    const imagen = req.file ? req.file.path : producto.imagen;
+
+    await producto.update({ nombre, descripcion, precio, imagen, categoriaId });
+
+    res.json(producto);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error al actualizar el producto' });
+  }
+});
+
+//Eliminar un producto
+router.delete('/:id', async (req, res) => {
+  try {
+    const producto = await Producto.findByPk(req.params.id);
+    if (!producto) {
+      return res.status(404).json({ error: 'Producto no encontrado' });
+    }
+
+    await producto.destroy();
+    res.json({ mensaje: 'Producto eliminado correctamente' });
+  } catch (error) {
+    res.status(500).json({ error: 'Error al eliminar el producto' });
+  }
+});
 module.exports = router;
