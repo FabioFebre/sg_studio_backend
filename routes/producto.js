@@ -52,8 +52,7 @@ router.get('/', async (req, res) => {
       include: { model: Categoria, as: 'categoria' }
     });
 
-    res.json(productos); // Las imágenes saldrán como array si el getter está bien definido
-  } catch (err) {
+    res.json(productos); 
     res.status(500).json({ error: err.message });
   }
 });
