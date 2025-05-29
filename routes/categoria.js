@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { Categoria } = require('../models');
+const { Categoria, Producto } = require('../models');
 
 // Crear categoría
 router.post('/', async (req, res) => {
@@ -60,6 +60,13 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
   const { id } = req.params;
   try {
+    // Buscar productos relacionados a la categoría
+    const productosAsociados = await Producto.findAll({ where: { categoriaId: id } });
+
+    if (productosAsociados.length > 0) {
+      return res.status(400).json({ mensaje: 'No se puede eliminar la categoría porque tiene productos asociados.' });
+    }
+
     const filasEliminadas = await Categoria.destroy({ where: { id } });
 
     if (filasEliminadas === 0) {
@@ -68,9 +75,8 @@ router.delete('/:id', async (req, res) => {
 
     res.json({ mensaje: 'Categoría eliminada correctamente' });
   } catch (error) {
-    console.error(error);  // 👈 importante para ver el error real
+    console.error(error);  
     res.status(500).json({ error: error.message });
   }
 });
-
 module.exports = router;
