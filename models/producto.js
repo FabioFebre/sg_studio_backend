@@ -15,7 +15,16 @@ module.exports = (sequelize, DataTypes) => {
     nombre: DataTypes.STRING,
     descripcion: DataTypes.STRING,
     precio: DataTypes.FLOAT,
-    imagen: DataTypes.STRING,
+    imagen: {
+      type: DataTypes.TEXT,
+      get() {
+        const raw = this.getDataValue('imagen');
+        return raw ? JSON.parse(raw) : [];
+      },
+      set(value) {
+        this.setDataValue('imagen', JSON.stringify(value));
+      }
+    },
     categoriaId: DataTypes.INTEGER,
 
     // Campos adicionales

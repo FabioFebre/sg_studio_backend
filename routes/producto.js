@@ -7,7 +7,7 @@ const upload = require('../middlewares/upload');
 
 // Crear producto
 // Crear producto con múltiples imágenes
-router.post('/', upload.array('imagenes', 3), async (req, res) => {
+router.post('/', upload.array('imagen', 3), async (req, res) => {
   try {
     const {
       nombre,
