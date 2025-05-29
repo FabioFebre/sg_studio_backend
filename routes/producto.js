@@ -138,19 +138,21 @@ router.delete('/:id', async (req, res) => {
       return res.status(404).json({ error: 'Producto no encontrado' });
     }
 
-    // No eliminamos la imagen en Cloudinary, porque la imagen siempre estará
-    // if (producto.imagen) {
+    // Eliminar imagen en Cloudinary (opcional, desactivado)
+    // if (producto.imagen && producto.imagen.length > 0) {
     //   const publicId = producto.imagen.split('/').pop().split('.')[0];
     //   await cloudinary.uploader.destroy(`productos/${publicId}`);
     // }
 
     await producto.destroy();
     res.json({ mensaje: 'Producto eliminado correctamente' });
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Error al eliminar el producto' });
   }
 });
+
 
 
 module.exports = router;
