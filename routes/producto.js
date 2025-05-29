@@ -46,18 +46,17 @@ router.post('/', upload.array('imagen', 3), async (req, res) => {
 });
 
 
-// Listar productos con su categoría
 router.get('/', async (req, res) => {
   try {
     const productos = await Producto.findAll({
       include: { model: Categoria, as: 'categoria' }
     });
-    res.json(productos);
+
+    res.json(productos); // Las imágenes saldrán como array si el getter está bien definido
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
-
 
 // Obtener un producto por ID
 router.get('/:id', async (req, res) => {
