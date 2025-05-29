@@ -8,7 +8,19 @@ const upload = require('../middlewares/upload');
 // Crear producto
 router.post('/', upload.single('imagen'), async (req, res) => {
   try {
-    const { nombre, descripcion, precio, categoriaId } = req.body;
+    const {
+      nombre,
+      descripcion,
+      precio,
+      categoriaId,
+      color,
+      talla,
+      cantidad,
+      composicion,
+      info,
+      cuidados
+    } = req.body;
+
     const imagen = req.file ? req.file.path : null;
 
     const nuevoProducto = await Producto.create({
@@ -16,7 +28,13 @@ router.post('/', upload.single('imagen'), async (req, res) => {
       descripcion,
       precio,
       imagen,
-      categoriaId
+      categoriaId,
+      color,
+      talla,
+      cantidad,
+      composicion,
+      info,
+      cuidados
     });
 
     res.status(201).json(nuevoProducto);
@@ -25,6 +43,7 @@ router.post('/', upload.single('imagen'), async (req, res) => {
     res.status(500).json({ error: 'Error al crear producto' });
   }
 });
+
 
 // Listar productos con su categoría
 router.get('/', async (req, res) => {
@@ -64,7 +83,18 @@ router.put('/:id', upload.single('imagen'), async (req, res) => {
       return res.status(404).json({ error: 'Producto no encontrado' });
     }
 
-    const { nombre, descripcion, precio, categoriaId } = req.body;
+    const {
+      nombre,
+      descripcion,
+      precio,
+      categoriaId,
+      color,
+      talla,
+      cantidad,
+      composicion,
+      info,
+      cuidados
+    } = req.body;
 
     let nuevaImagen = producto.imagen;
 
@@ -84,7 +114,13 @@ router.put('/:id', upload.single('imagen'), async (req, res) => {
       descripcion,
       precio,
       imagen: nuevaImagen,
-      categoriaId
+      categoriaId,
+      color,
+      talla,
+      cantidad,
+      composicion,
+      info,
+      cuidados
     });
 
     res.json(producto);
@@ -93,6 +129,7 @@ router.put('/:id', upload.single('imagen'), async (req, res) => {
     res.status(500).json({ error: 'Error al actualizar el producto' });
   }
 });
+
 
 //Eliminar Producto 
 router.delete('/:id', async (req, res) => {
