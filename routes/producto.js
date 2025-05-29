@@ -6,7 +6,8 @@ const path = require('path');
 const upload = require('../middlewares/upload');
 
 // Crear producto
-router.post('/', upload.single('imagen'), async (req, res) => {
+// Crear producto con múltiples imágenes
+router.post('/', upload.array('imagenes', 3), async (req, res) => {
   try {
     const {
       nombre,
@@ -21,13 +22,13 @@ router.post('/', upload.single('imagen'), async (req, res) => {
       cuidados
     } = req.body;
 
-    const imagen = req.file ? req.file.path : null;
+    const imagenes = req.files ? req.files.map(file => file.path) : [];
 
     const nuevoProducto = await Producto.create({
       nombre,
       descripcion,
       precio,
-      imagen,
+      imagen: imagenes, // ← guarda como arreglo
       categoriaId,
       color,
       talla,
