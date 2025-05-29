@@ -52,10 +52,13 @@ router.get('/', async (req, res) => {
       include: { model: Categoria, as: 'categoria' }
     });
 
-    res.json(productos); 
+    res.json(productos);
+  } catch (err) {
+    console.error(err);
     res.status(500).json({ error: err.message });
   }
 });
+
 
 // Obtener un producto por ID
 router.get('/:id', async (req, res) => {
