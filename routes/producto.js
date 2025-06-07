@@ -6,7 +6,7 @@ const path = require('path');
 const upload = require('../middlewares/upload');
 
 
-router.post('/', upload.array('imagen', 6), async (req, res) => {
+router.post('/', upload.array('imagen', 10), async (req, res) => {
   try {
     const {
       nombre,
