@@ -5,9 +5,8 @@ const multer = require('multer');
 const path = require('path');
 const upload = require('../middlewares/upload');
 
-// Crear producto
-// Crear producto con múltiples imágenes
-router.post('/', upload.array('imagen', 3), async (req, res) => {
+
+router.post('/', upload.array('imagen', 6), async (req, res) => {
   try {
     const {
       nombre,
@@ -28,7 +27,7 @@ router.post('/', upload.array('imagen', 3), async (req, res) => {
       nombre,
       descripcion,
       precio,
-      imagen: imagenes, // ← guarda como arreglo
+      imagen: imagenes, 
       categoriaId,
       color,
       talla,

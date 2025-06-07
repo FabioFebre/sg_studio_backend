@@ -29,13 +29,16 @@ module.exports = (sequelize, DataTypes) => {
     },
     categoriaId: DataTypes.INTEGER,
 
-    // Campos adicionales
-    color: DataTypes.STRING,          // Ejemplo: "Rojo", "Azul"
-    talla: DataTypes.STRING,          // Ejemplo: "S", "M", "L", "XL"
-    cantidad: DataTypes.INTEGER,      // Stock disponible por combinación
-    composicion: DataTypes.STRING,    // Ejemplo: "100% algodón"
-    info: DataTypes.TEXT,             // Información adicional
-    cuidados: DataTypes.TEXT          // Instrucciones de lavado, etc.
+    color: DataTypes.STRING,        
+    talla: DataTypes.STRING,         
+    cantidad: DataTypes.INTEGER,     
+    composicion: DataTypes.STRING,   
+    info: DataTypes.TEXT,             
+    cuidados: DataTypes.TEXT,
+    seleccionado: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    }         
   }, {
     sequelize,
     modelName: 'Producto',
