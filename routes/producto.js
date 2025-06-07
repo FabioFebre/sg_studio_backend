@@ -18,7 +18,8 @@ router.post('/', upload.array('imagen', 6), async (req, res) => {
       cantidad,
       composicion,
       info,
-      cuidados
+      cuidados,
+      seleccionado  
     } = req.body;
 
     const imagenes = req.files ? req.files.map(file => file.path) : [];
@@ -34,7 +35,8 @@ router.post('/', upload.array('imagen', 6), async (req, res) => {
       cantidad,
       composicion,
       info,
-      cuidados
+      cuidados,
+      seleccionado 
     });
 
     res.status(201).json(nuevoProducto);
@@ -94,7 +96,8 @@ router.put('/:id', upload.single('imagen'), async (req, res) => {
       cantidad,
       composicion,
       info,
-      cuidados
+      cuidados,
+      seleccionado 
     } = req.body;
 
     let nuevaImagen = producto.imagen;
@@ -121,7 +124,8 @@ router.put('/:id', upload.single('imagen'), async (req, res) => {
       cantidad,
       composicion,
       info,
-      cuidados
+      cuidados,
+      seleccionado 
     });
 
     res.json(producto);
@@ -130,6 +134,21 @@ router.put('/:id', upload.single('imagen'), async (req, res) => {
     res.status(500).json({ error: 'Error al actualizar el producto' });
   }
 });
+
+router.get('/seleccionados', async (req, res) => {
+  try {
+    const productos = await Producto.findAll({
+      where: { seleccionado: true },
+      include: { model: Categoria, as: 'categoria' }
+    });
+
+    res.json(productos);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 
 
 //Eliminar Producto 
