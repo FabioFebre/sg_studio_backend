@@ -100,23 +100,18 @@ router.put('/:id', upload.array('imagen', 10), async (req, res) => {
       seleccionado 
     } = req.body;
 
+    // Reemplazar imágenes si se suben nuevas
     let nuevasImagenes = producto.imagen || [];
 
     if (req.files && req.files.length > 0) {
-
-      for (const oldImg of nuevasImagenes) {
-        const publicId = oldImg.split('/').pop().split('.')[0];
-        await cloudinary.uploader.destroy(`productos/${publicId}`);
-      }
-
-      nuevasImagenes = req.files.map(file => file.path);
+      nuevasImagenes = req.files.map(file => file.path); // Solo reemplaza con las nuevas
     }
 
     await producto.update({
       nombre,
       descripcion,
       precio,
-      imagen: nuevasImagenes,
+      imagen: nuevasImagenes, // Si no se subieron nuevas, conserva las anteriores
       categoriaId,
       color,
       talla,
@@ -133,6 +128,7 @@ router.put('/:id', upload.array('imagen', 10), async (req, res) => {
     res.status(500).json({ error: 'Error al actualizar el producto' });
   }
 });
+
 
 
 router.get('/seleccionados', async (req, res) => {
