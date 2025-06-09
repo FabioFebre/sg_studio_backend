@@ -79,7 +79,7 @@ router.get('/:id', async (req, res) => {
 });
 
 //Editar Producto
-router.put('/:id', upload.single('imagen'), async (req, res) => {
+router.put('/:id', upload.array('imagen', 10), async (req, res) => {
   try {
     const producto = await Producto.findByPk(req.params.id);
     if (!producto) {
@@ -100,24 +100,23 @@ router.put('/:id', upload.single('imagen'), async (req, res) => {
       seleccionado 
     } = req.body;
 
-    let nuevaImagen = producto.imagen;
+    let nuevasImagenes = producto.imagen || [];
 
-    if (req.file) {
-      // (Opcional) Eliminar imagen anterior de Cloudinary si existe
-      if (producto.imagen) {
-        const publicId = producto.imagen.split('/').pop().split('.')[0];
+    if (req.files && req.files.length > 0) {
+
+      for (const oldImg of nuevasImagenes) {
+        const publicId = oldImg.split('/').pop().split('.')[0];
         await cloudinary.uploader.destroy(`productos/${publicId}`);
       }
 
-      // Guardar nueva imagen
-      nuevaImagen = req.file.path;
+      nuevasImagenes = req.files.map(file => file.path);
     }
 
     await producto.update({
       nombre,
       descripcion,
       precio,
-      imagen: nuevaImagen,
+      imagen: nuevasImagenes,
       categoriaId,
       color,
       talla,
@@ -134,6 +133,7 @@ router.put('/:id', upload.single('imagen'), async (req, res) => {
     res.status(500).json({ error: 'Error al actualizar el producto' });
   }
 });
+
 
 router.get('/seleccionados', async (req, res) => {
   try {
