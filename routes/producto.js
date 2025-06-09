@@ -97,21 +97,19 @@ router.put('/:id', upload.array('imagen', 10), async (req, res) => {
       composicion,
       info,
       cuidados,
-      seleccionado 
+      seleccionado,
     } = req.body;
 
-    // Reemplazar imágenes si se suben nuevas
-    let nuevasImagenes = producto.imagen || [];
-
-    if (req.files && req.files.length > 0) {
-      nuevasImagenes = req.files.map(file => file.path); // Solo reemplaza con las nuevas
-    }
+    // Si hay nuevas imágenes, reemplazar; si no, mantener las anteriores
+    const nuevasImagenes = req.files && req.files.length > 0
+      ? req.files.map(file => file.path)
+      : producto.imagen;
 
     await producto.update({
       nombre,
       descripcion,
       precio,
-      imagen: nuevasImagenes, // Si no se subieron nuevas, conserva las anteriores
+      imagen: nuevasImagenes,
       categoriaId,
       color,
       talla,
@@ -119,7 +117,7 @@ router.put('/:id', upload.array('imagen', 10), async (req, res) => {
       composicion,
       info,
       cuidados,
-      seleccionado 
+      seleccionado,
     });
 
     res.json(producto);
@@ -128,7 +126,6 @@ router.put('/:id', upload.array('imagen', 10), async (req, res) => {
     res.status(500).json({ error: 'Error al actualizar el producto' });
   }
 });
-
 
 
 router.get('/seleccionados', async (req, res) => {
