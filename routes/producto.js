@@ -100,7 +100,6 @@ router.put('/:id', upload.array('imagen', 10), async (req, res) => {
       seleccionado,
     } = req.body;
 
-    // Si hay nuevas imágenes, reemplazar; si no, mantener las anteriores
     const nuevasImagenes = req.files && req.files.length > 0
       ? req.files.map(file => file.path)
       : producto.imagen;
@@ -151,12 +150,6 @@ router.delete('/:id', async (req, res) => {
     if (!producto) {
       return res.status(404).json({ error: 'Producto no encontrado' });
     }
-
-    // Eliminar imagen en Cloudinary (opcional, desactivado)
-    // if (producto.imagen && producto.imagen.length > 0) {
-    //   const publicId = producto.imagen.split('/').pop().split('.')[0];
-    //   await cloudinary.uploader.destroy(`productos/${publicId}`);
-    // }
 
     await producto.destroy();
     res.json({ mensaje: 'Producto eliminado correctamente' });

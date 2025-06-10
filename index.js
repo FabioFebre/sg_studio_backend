@@ -32,7 +32,14 @@ app.use('/productos', productosRouter);
 const categoriasRouter = require('./routes/categoria');
 app.use('/categorias', categoriasRouter);
 
+//carrito
+const carritoRoutes = require('./routes/carrito');
+app.use('/carrito', carritoRoutes);
 
+
+//carritoItem
+const carritoItemRoutes = require('./routes/carritoitem');
+app.use('/carritoIitem', carritoItemRoutes);
 
 app.listen(3005, () => {
   console.log('Servidor corriendo en http://localhost:3005');

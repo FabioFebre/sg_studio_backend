@@ -7,10 +7,10 @@ module.exports = {
       type: 'foreign key',
       name: 'fk_productos_categoriaId',
       references: {
-        table: 'Categoria',  // 👈 usa el nombre correcto
+        table: 'Categoria', 
         field: 'id'
       },
-      onDelete: 'SET NULL',    // 👈 evita eliminación en cascada
+      onDelete: 'SET NULL',    
       onUpdate: 'CASCADE'
     });
   },
