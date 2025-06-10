@@ -9,14 +9,21 @@ router.get('/:usuarioId', async (req, res) => {
 
     let carrito = await Carrito.findOne({
       where: { usuarioId },
-      include: {
-        model: CarritoItem,
-        as: 'items',
-        include: {
-          model: Producto,
-          as: 'producto'
+      include: [
+        {
+          model: CarritoItem,
+          as: 'items',
+          include: {
+            model: Producto,
+            as: 'producto'
+          }
+        },
+        {
+          model: Usuario,
+          as: 'usuario',
+          attributes: ['id', 'nombre', 'apellido', 'email']
         }
-      }
+      ]
     });
 
     if (!carrito) {
@@ -30,6 +37,7 @@ router.get('/:usuarioId', async (req, res) => {
     res.status(500).json({ error: 'Error al obtener el carrito' });
   }
 });
+
 
 // Agregar producto al carrito
 router.post('/add', async (req, res) => {
