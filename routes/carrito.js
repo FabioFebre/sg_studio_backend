@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { Carrito, CarritoItem, Producto } = require('../models');
+const { Carrito, CarritoItem, Producto, Usuario } = require('../models');
 
 // Obtener carrito completo por usuarioId
 router.get('/:usuarioId', async (req, res) => {
@@ -29,6 +29,9 @@ router.get('/:usuarioId', async (req, res) => {
     if (!carrito) {
       carrito = await Carrito.create({ usuarioId });
       carrito.items = [];
+      carrito.usuario = await Usuario.findByPk(usuarioId, {
+        attributes: ['id', 'nombre', 'apellido', 'email']
+      });
     }
 
     res.json(carrito);
@@ -38,7 +41,7 @@ router.get('/:usuarioId', async (req, res) => {
   }
 });
 
-
+module.exports = router;
 // Agregar producto al carrito
 router.post('/add', async (req, res) => {
   try {
