@@ -41,7 +41,7 @@ router.get('/:usuarioId', async (req, res) => {
   }
 });
 
-module.exports = router;
+
 // Agregar producto al carrito
 router.post('/add', async (req, res) => {
   try {
