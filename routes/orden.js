@@ -52,7 +52,6 @@ router.get('/:id', async (req, res) => {
     res.status(500).json({ error: 'Error al obtener la orden' });
   }
 });
-
 // Crear una nueva orden
 router.post('/', async (req, res) => {
   try {
@@ -61,32 +60,59 @@ router.post('/', async (req, res) => {
       pais, departamento, provincia, distrito,
       direccion, referencia, metodoEnvio,
       subtotal, envio, total, cuponCodigo,
-      items // array de objetos con productoId, nombreProducto, cantidad, precioUnitario, talla
+      items
     } = req.body;
 
-    const orden = await Orden.create({
-      usuarioId, nombre, apellido, email, telefono,
-      pais, departamento, provincia, distrito,
-      direccion, referencia, metodoEnvio,
-      subtotal, envio, total, cuponCodigo
-    });
-
-    if (items && items.length > 0) {
-      for (const item of items) {
-        await OrdenItem.create({
-          ordenId: orden.id,
-          ...item,
-          precioTotal: item.precioUnitario * item.cantidad
-        });
-      }
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ error: 'La orden debe contener al menos un producto' });
     }
 
-    res.status(201).json({ mensaje: 'Orden creada correctamente', ordenId: orden.id });
+    const orden = await Orden.create({
+      usuarioId,
+      nombre,
+      apellido,
+      email,
+      telefono,
+      pais,
+      departamento,
+      provincia,
+      distrito,
+      direccion,
+      referencia,
+      metodoEnvio,
+      subtotal,
+      envio,
+      total,
+      cuponCodigo
+    });
+
+    // Guardar los productos relacionados
+    const itemsCreados = await Promise.all(
+      items.map(async (item) => {
+        return await OrdenItem.create({
+          ordenId: orden.id,
+          productoId: item.productoId,
+          nombreProducto: item.nombreProducto,
+          cantidad: item.cantidad,
+          precioUnitario: item.precioUnitario,
+          talla: item.talla,
+          precioTotal: item.precioUnitario * item.cantidad
+        });
+      })
+    );
+
+    res.status(201).json({
+      mensaje: 'Orden creada correctamente',
+      ordenId: orden.id,
+      items: itemsCreados
+    });
+
   } catch (error) {
-    console.error(error);
+    console.error('Error al crear orden:', error);
     res.status(500).json({ error: 'Error al crear orden' });
   }
 });
+
 
 // Actualizar estado de una orden
 router.put('/estado/:id', async (req, res) => {
