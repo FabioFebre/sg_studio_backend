@@ -52,6 +52,8 @@ router.get('/:id', async (req, res) => {
     res.status(500).json({ error: 'Error al obtener la orden' });
   }
 });
+
+
 // Crear una nueva orden
 router.post('/', async (req, res) => {
   try {
@@ -67,6 +69,7 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ error: 'La orden debe contener al menos un producto' });
     }
 
+    // Crear orden principal
     const orden = await Orden.create({
       usuarioId,
       nombre,
@@ -86,29 +89,41 @@ router.post('/', async (req, res) => {
       cuponCodigo
     });
 
-    // Guardar los productos relacionados
-    const itemsCreados = await Promise.all(
-      items.map(async (item) => {
-        return await OrdenItem.create({
-          ordenId: orden.id,
-          productoId: item.productoId,
-          nombreProducto: item.nombreProducto,
-          cantidad: item.cantidad,
-          precioUnitario: item.precioUnitario,
-          talla: item.talla,
-          precioTotal: item.precioUnitario * item.cantidad
-        });
-      })
-    );
+    // Crear los items relacionados
+    const itemsConOrdenId = items.map(item => ({
+      ordenId: orden.id,
+      productoId: item.productoId,
+      nombreProducto: item.nombreProducto,
+      cantidad: item.cantidad,
+      precioUnitario: item.precioUnitario,
+      talla: item.talla,
+      precioTotal: item.precioUnitario * item.cantidad
+    }));
+
+    await OrdenItem.bulkCreate(itemsConOrdenId);
+
+    // Traer la orden completa con relaciones
+    const ordenConTodo = await Orden.findByPk(orden.id, {
+      include: [
+        {
+          model: OrdenItem,
+          as: 'items'
+        },
+        {
+          model: Usuario,
+          as: 'usuario',
+          attributes: ['id', 'nombre', 'apellido', 'email']
+        }
+      ]
+    });
 
     res.status(201).json({
       mensaje: 'Orden creada correctamente',
-      ordenId: orden.id,
-      items: itemsCreados
+      orden: ordenConTodo
     });
 
   } catch (error) {
-    console.error('Error al crear orden:', error);
+    console.error('❌ Error al crear orden:', error);
     res.status(500).json({ error: 'Error al crear orden' });
   }
 });
