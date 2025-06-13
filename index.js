@@ -41,6 +41,12 @@ app.use('/carrito', carritoRoutes);
 const carritoItemRoutes = require('./routes/carritoitem');
 app.use('/carritoIitem', carritoItemRoutes);
 
+//orden
+const ordenRoutes = require('./routes/orden');
+app.use('/ordenes', ordenRoutes);
+
+
+
 app.listen(3005, () => {
   console.log('Servidor corriendo en http://localhost:3005');
 });
