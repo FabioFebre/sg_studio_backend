@@ -91,14 +91,12 @@ router.post('/', async (req, res) => {
 
     // Crear los items relacionados
     const itemsConOrdenId = items.map(item => ({
-      ordenId: orden.id,
-      productoId: item.productoId,
-      nombreProducto: item.nombreProducto,
-      cantidad: item.cantidad,
-      precioUnitario: item.precioUnitario,
-      talla: item.talla,
-      precioTotal: item.precioUnitario * item.cantidad
+    ordenId: orden.id,
+    productoId: item.productoId,
+    cantidad: item.cantidad,
+    precio: item.precio // Asegúrate que este campo existe y representa el precio unitario o total
     }));
+
 
     await OrdenItem.bulkCreate(itemsConOrdenId);
 
