@@ -45,6 +45,9 @@ app.use('/carritoIitem', carritoItemRoutes);
 const ordenRoutes = require('./routes/orden');
 app.use('/ordenes', ordenRoutes);
 
+//ordenItem
+const ordenItemRoutes = require('./routes/ordenItem');
+app.use('/orden-items', ordenItemRoutes);
 
 
 app.listen(3005, () => {
