@@ -39,7 +39,10 @@ router.put('/:id', async (req, res) => {
     const item = await OrdenItem.findByPk(req.params.id);
     if (!item) return res.status(404).json({ error: 'No encontrado' });
 
-    await item.update(req.body);
+    await item.update(req.body, {
+      fields: Object.keys(req.body)
+    });
+
     res.json(item);
   } catch (error) {
     res.status(500).json({ error: error.message });
