@@ -36,7 +36,7 @@ module.exports = (sequelize, DataTypes) => {
     metodoEnvio: DataTypes.STRING,
     estado: {
       type: DataTypes.STRING,
-      defaultValue: 'pendiente'
+      defaultValue: 'completado'
     },
     subtotal: DataTypes.FLOAT,
     envio: DataTypes.FLOAT,

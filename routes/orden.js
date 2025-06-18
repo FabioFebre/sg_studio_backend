@@ -86,7 +86,8 @@ router.post('/', async (req, res) => {
       subtotal,
       envio,
       total,
-      cuponCodigo
+      cuponCodigo,
+      estado: 'completado'
     });
 
     // Crear los items relacionados
