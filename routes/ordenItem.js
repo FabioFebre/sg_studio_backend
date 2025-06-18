@@ -13,14 +13,42 @@ router.post('/', async (req, res) => {
 });
 
 // Obtener todos los items
+// Obtener todos los items o filtrar por ordenId
 router.get('/', async (req, res) => {
   try {
+    const { ordenId } = req.query;
+
+    // Si viene un ordenId por query, filtrar
+    if (ordenId) {
+      const items = await OrdenItem.findAll({
+        where: { ordenId },
+        include: [
+          {
+            model: require('../models').Producto,
+            as: 'producto',
+            attributes: ['nombre']
+          }
+        ]
+      });
+
+      // Adjuntar el nombre del producto directamente
+      const itemsConNombre = items.map((item) => ({
+        ...item.toJSON(),
+        nombreProducto: item.producto?.nombre || 'Desconocido'
+      }));
+
+      return res.json(itemsConNombre);
+    }
+
+    // Si no se proporciona ordenId, retornar todos los items
     const items = await OrdenItem.findAll();
     res.json(items);
   } catch (error) {
+    console.error('Error al obtener items:', error);
     res.status(500).json({ error: error.message });
   }
 });
+
 
 // Obtener por ID
 router.get('/:id', async (req, res) => {
