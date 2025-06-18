@@ -139,5 +139,23 @@ router.put('/:id', async (req, res) => {
     res.status(500).json({ error: 'Error al actualizar usuario' });
   }
 });
+// Eliminar un usuario
+router.delete('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const usuario = await Usuario.findByPk(id);
+
+    if (!usuario) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+
+    await usuario.destroy();
+    res.json({ mensaje: 'Usuario eliminado correctamente' });
+  } catch (error) {
+    console.error('Error al eliminar usuario:', error);
+    res.status(500).json({ error: 'Error al eliminar usuario' });
+  }
+});
+
 
 module.exports = router;
