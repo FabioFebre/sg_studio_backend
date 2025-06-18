@@ -127,23 +127,7 @@ router.post('/', async (req, res) => {
 });
 
 
-// Actualizar estado de una orden
-router.put('/estado/:id', async (req, res) => {
-  try {
-    const { estado } = req.body;
-
-    const orden = await Orden.findByPk(req.params.id);
-    if (!orden) return res.status(404).json({ error: 'Orden no encontrada' });
-
-    orden.estado = estado;
-    await orden.save();
-
-    res.json({ mensaje: 'Estado actualizado', orden });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Error al actualizar el estado' });
-  }
-});
+  
 
 // Eliminar una orden
 router.delete('/:id', async (req, res) => {

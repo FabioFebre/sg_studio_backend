@@ -61,6 +61,22 @@ router.get('/', async (req, res) => {
 });
 
 
+router.get('/seleccionados', async (req, res) => {
+  try {
+    const productos = await Producto.findAll({
+      where: { seleccionado: true },
+      include: { model: Categoria, as: 'categoria' }
+    });
+
+    res.json(productos);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+
 // Obtener un producto por ID
 router.get('/:id', async (req, res) => {
   try {
@@ -126,20 +142,6 @@ router.put('/:id', upload.array('imagen', 10), async (req, res) => {
   }
 });
 
-
-router.get('/seleccionados', async (req, res) => {
-  try {
-    const productos = await Producto.findAll({
-      where: { seleccionado: true },
-      include: { model: Categoria, as: 'categoria' }
-    });
-
-    res.json(productos);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: err.message });
-  }
-});
 
 
 
