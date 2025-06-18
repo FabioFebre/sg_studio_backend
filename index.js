@@ -50,6 +50,10 @@ app.use('/ordenes', ordenRoutes);
 const ordenItemRoutes = require('./routes/ordenItem');
 app.use('/orden-items', ordenItemRoutes);
 
+//reclamo
+const reclamosRoutes = require('./routes/reclamos');
+app.use('/reclamos', reclamosRoutes);
+
 
 app.listen(3005, () => {
   console.log('Servidor corriendo en http://localhost:3005');
