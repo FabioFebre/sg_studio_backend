@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { Orden, OrdenItem, Usuario } = require('../models');
+const { Orden, OrdenItem, Usuario,Producto  } = require('../models');
 
 // Obtener todas las órdenes
 router.get('/', async (req, res) => {
@@ -9,7 +9,14 @@ router.get('/', async (req, res) => {
       include: [
         {
           model: OrdenItem,
-          as: 'items'
+          as: 'items',
+          include: [
+            {
+              model: Producto,
+              as: 'producto',
+              attributes: ['id', 'nombre'] // Puedes agregar más campos si los necesitas
+            }
+          ]
         },
         {
           model: Usuario,

@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
     usuarioId: { type: DataTypes.INTEGER, allowNull: false },
     ordenId: { type: DataTypes.INTEGER, allowNull: false },
     mensaje: { type: DataTypes.TEXT, allowNull: false },
-    estado: { type: DataTypes.STRING, defaultValue: 'completado' } // o "resuelto"
+    estado: { type: DataTypes.STRING, defaultValue: 'completado' } 
   }, {
     sequelize,
     modelName: 'Reclamo',
