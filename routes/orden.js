@@ -142,4 +142,27 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
+// Actualizar solo el estado de una orden
+router.put('/estado/:id', async (req, res) => {
+  try {
+    const { estado } = req.body;
+
+    if (!estado) {
+      return res.status(400).json({ error: 'El campo estado es requerido' });
+    }
+
+    const orden = await Orden.findByPk(req.params.id);
+    if (!orden) return res.status(404).json({ error: 'Orden no encontrada' });
+
+    orden.estado = estado;
+    await orden.save();
+
+    res.json({ mensaje: 'Estado actualizado', orden });
+  } catch (error) {
+    console.error('❌ Error al actualizar estado:', error);
+    res.status(500).json({ error: 'Error al actualizar estado' });
+  }
+});
+
+
 module.exports = router;
