@@ -6,30 +6,12 @@ const { Orden, OrdenItem, Usuario,Producto  } = require('../models');
 router.get('/', async (req, res) => {
   try {
     const ordenes = await Orden.findAll({
-      include: [
-        {
-          model: OrdenItem,
-          as: 'items',
-          include: [
-            {
-              model: Producto,
-              as: 'producto',
-              attributes: ['id', 'nombre'] // Puedes agregar más campos si los necesitas
-            }
-          ]
-        },
-        {
-          model: Usuario,
-          as: 'usuario',
-          attributes: ['id', 'nombre', 'apellido', 'email']
-        }
-      ],
       order: [['createdAt', 'DESC']]
     });
 
     res.json(ordenes);
   } catch (error) {
-    console.error(error);
+    console.error('Error al obtener órdenes:', error);
     res.status(500).json({ error: 'Error al obtener órdenes' });
   }
 });
