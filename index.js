@@ -51,7 +51,7 @@ const ordenItemRoutes = require('./routes/ordenItem');
 app.use('/orden-items', ordenItemRoutes);
 
 //reclamo
-const reclamosRoutes = require('./routes/reclamos');
+const reclamosRoutes = require('./routes/reclamo');
 app.use('/reclamos', reclamosRoutes);
 
 
