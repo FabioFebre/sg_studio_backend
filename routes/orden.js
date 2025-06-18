@@ -41,7 +41,14 @@ router.get('/:id', async (req, res) => {
       include: [
         {
           model: OrdenItem,
-          as: 'items'
+          as: 'items',
+          include: [
+            {
+              model: Producto,
+              as: 'producto',
+              attributes: ['id', 'nombre'] // aquí está el cambio clave
+            }
+          ]
         },
         {
           model: Usuario,
