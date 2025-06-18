@@ -143,7 +143,6 @@ router.delete('/:id', async (req, res) => {
 });
 
 // Actualizar solo el estado de una orden
-// Actualizar subtotal, envio y total de una orden
 router.put('/:id', async (req, res) => {
   try {
     const { subtotal, envio, total, estado } = req.body;
@@ -151,20 +150,19 @@ router.put('/:id', async (req, res) => {
     const orden = await Orden.findByPk(req.params.id);
     if (!orden) return res.status(404).json({ error: 'Orden no encontrada' });
 
-    if (subtotal !== undefined) orden.subtotal = subtotal;
-    if (envio !== undefined) orden.envio = envio;
-    if (total !== undefined) orden.total = total;
-    if (estado !== undefined) orden.estado = estado;
+    orden.subtotal = subtotal !== undefined ? subtotal : orden.subtotal;
+    orden.envio = envio !== undefined ? envio : orden.envio;
+    orden.total = total !== undefined ? total : orden.total;
+    orden.estado = estado !== undefined ? estado : orden.estado;
 
     await orden.save();
 
-    res.json({ mensaje: 'Orden actualizada correctamente', orden });
+    res.json({ mensaje: 'Orden actualizada', orden });
   } catch (error) {
     console.error('❌ Error al actualizar orden:', error);
     res.status(500).json({ error: 'Error al actualizar la orden' });
   }
 });
-
 
 
 module.exports = router;
