@@ -1,11 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const { Producto, Categoria } = require('../models');
-const multer = require('multer');
-const path = require('path');
 const upload = require('../middlewares/upload');
 
-
+// Crear producto
 router.post('/', upload.array('imagen', 10), async (req, res) => {
   try {
     const {
@@ -24,6 +22,8 @@ router.post('/', upload.array('imagen', 10), async (req, res) => {
 
     const imagenes = req.files ? req.files.map(file => file.path) : [];
 
+    const tallasArray = talla ? talla.split(',').map(t => t.trim()) : [];
+
     const nuevoProducto = await Producto.create({
       nombre,
       descripcion,
@@ -31,7 +31,7 @@ router.post('/', upload.array('imagen', 10), async (req, res) => {
       imagen: imagenes, 
       categoriaId,
       color,
-      talla,
+      talla: tallasArray,
       cantidad,
       composicion,
       info,
@@ -46,7 +46,7 @@ router.post('/', upload.array('imagen', 10), async (req, res) => {
   }
 });
 
-
+// Listar todos los productos
 router.get('/', async (req, res) => {
   try {
     const productos = await Producto.findAll({
@@ -60,7 +60,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-
+// Listar productos seleccionados
 router.get('/seleccionados', async (req, res) => {
   try {
     const productos = await Producto.findAll({
@@ -75,9 +75,7 @@ router.get('/seleccionados', async (req, res) => {
   }
 });
 
-
-
-// Obtener un producto por ID
+// Obtener producto por ID
 router.get('/:id', async (req, res) => {
   try {
     const producto = await Producto.findByPk(req.params.id, {
@@ -94,7 +92,7 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-//Editar Producto
+// Editar producto
 router.put('/:id', upload.array('imagen', 10), async (req, res) => {
   try {
     const producto = await Producto.findByPk(req.params.id);
@@ -120,6 +118,8 @@ router.put('/:id', upload.array('imagen', 10), async (req, res) => {
       ? req.files.map(file => file.path)
       : producto.imagen;
 
+    const tallasArray = talla ? talla.split(',').map(t => t.trim()) : producto.talla;
+
     await producto.update({
       nombre,
       descripcion,
@@ -127,7 +127,7 @@ router.put('/:id', upload.array('imagen', 10), async (req, res) => {
       imagen: nuevasImagenes,
       categoriaId,
       color,
-      talla,
+      talla: tallasArray,
       cantidad,
       composicion,
       info,
@@ -142,10 +142,7 @@ router.put('/:id', upload.array('imagen', 10), async (req, res) => {
   }
 });
 
-
-
-
-//Eliminar Producto 
+// Eliminar producto
 router.delete('/:id', async (req, res) => {
   try {
     const producto = await Producto.findByPk(req.params.id);
@@ -161,7 +158,5 @@ router.delete('/:id', async (req, res) => {
     res.status(500).json({ error: 'Error al eliminar el producto' });
   }
 });
-
-
 
 module.exports = router;

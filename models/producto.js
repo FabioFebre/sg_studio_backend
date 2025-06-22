@@ -30,7 +30,16 @@ module.exports = (sequelize, DataTypes) => {
     categoriaId: DataTypes.INTEGER,
 
     color: DataTypes.STRING,        
-    talla: DataTypes.STRING,         
+    talla: {
+      type: DataTypes.TEXT,
+      get() {
+        const raw = this.getDataValue('talla');
+        return raw ? JSON.parse(raw) : [];
+      },
+      set(value) {
+        this.setDataValue('talla', JSON.stringify(value));
+      }
+    },
     cantidad: DataTypes.INTEGER,     
     composicion: DataTypes.STRING,   
     info: DataTypes.TEXT,             
