@@ -118,7 +118,7 @@ router.post('/', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('❌ Error al crear orden:', error);
+    console.error(' Error al crear orden:', error);
     res.status(500).json({ error: 'Error al crear orden' });
   }
 });
@@ -159,7 +159,7 @@ router.put('/:id', async (req, res) => {
 
     res.json({ mensaje: 'Orden actualizada', orden });
   } catch (error) {
-    console.error('❌ Error al actualizar orden:', error);
+    console.error(' Error al actualizar orden:', error);
     res.status(500).json({ error: 'Error al actualizar la orden' });
   }
 });
