@@ -2,28 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { Usuario } = require('../models');
 const bcrypt = require('bcrypt');
-const nodemailer = require('nodemailer');
 
-const enviarCorreoBienvenida = async (emailDestino, nombre) => {
-  const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: process.env.CORREO_SG,
-      pass: process.env.PASS_CORREO_SG,
-    },
-  });
-
-  const mailOptions = {
-    from: 'SG Studio <' + process.env.CORREO_SG + '>',
-    to: emailDestino,
-    subject: '¡Gracias por registrarte en SG Studio!',
-    text: `Hola ${nombre},\n\nGracias por registrarte en la Página Oficial de SG Studio.\n\nEsperamos con ansias tus pedidos vía WhatsApp.\n\n¡Saludos!\nEl equipo de SG Studio 🎨`,
-  };
-
-  await transporter.sendMail(mailOptions);
-};
-
-module.exports = { enviarCorreoBienvenida };
 // Listar todos los usuarios
 router.get('/', async (req, res) => {
   try {
@@ -58,30 +37,33 @@ router.post('/', async (req, res) => {
   try {
     const { nombre, apellido, email, password, rol } = req.body;
 
+    // Validar campos requeridos
     if (!nombre || !apellido || !email || !password) {
       return res.status(400).json({ error: 'Todos los campos son obligatorios' });
     }
 
     const emailNormalizado = email.toLowerCase().trim();
 
+    // Verificar si el usuario ya existe
     const usuarioExistente = await Usuario.findOne({ where: { email: emailNormalizado } });
     if (usuarioExistente) {
       return res.status(409).json({ error: 'Ya existe un usuario con este correo' });
     }
 
+    // Encriptar la contraseña
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // Crear el nuevo usuario
     const usuario = await Usuario.create({
       nombre,
       apellido,
-      email: emailNormalizado,
+      email,
       password: hashedPassword,
       rol: rol || 'user',
     });
 
-    // Enviar correo de bienvenida
-    await enviarCorreoBienvenida(emailNormalizado, nombre);
 
+    // Ocultar contraseña al responder
     const { password: pw, ...usuarioSinPassword } = usuario.toJSON();
     res.status(201).json(usuarioSinPassword);
   } catch (error) {
