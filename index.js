@@ -4,7 +4,12 @@ const app = express();
 app.use(express.json());
 const db = require('./models');
 const cors = require('cors');
-app.use(cors());
+app.use(cors({
+  origin: ['https://www.sgstudio.shop', 'http://localhost:3000'],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true 
+}));
 require('dotenv').config();
 console.log('Base de datos actual:', db.sequelize.config.database);
 const path = require('path');
