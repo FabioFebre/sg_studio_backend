@@ -1,73 +1,38 @@
-// index.js
+require('dotenv').config();
 const express = require('express');
+const cors = require('cors');
 const app = express();
 
+// Middlewares
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-const cors = require('cors');
-
-app.use(cors({
-  origin: ['https://www.sgstudio.shop', 'http://localhost:3000'],
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true 
-}));
-
-
-app.use(express.json({ limit: '25mb' }));
-app.use(express.urlencoded({ extended: true, limit: '25mb' }));
-
-const db = require('./models');
-
-require('dotenv').config();
-console.log('Base de datos actual:', db.sequelize.config.database);
-const path = require('path');
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
-
-db.sequelize.sync() 
-  .then(() => {
-    console.log('Conectado a la base de datos y sincronizado');
-  })
-  .catch((err) => {
-    console.error('Error al conectar la base de datos:', err);
-  });
-
-//usuarios
+// Rutas
 const usuariosRouter = require('./routes/usuarios');
-app.use('/usuarios', usuariosRouter);
-
-//productos
 const productosRouter = require('./routes/producto');
-app.use('/productos', productosRouter);
-
-
-//categorias
 const categoriasRouter = require('./routes/categoria');
-app.use('/categorias', categoriasRouter);
+const carritoRouter = require('./routes/carrito');
+const ordenesRouter = require('./routes/orden');
+const ordenItemsRouter = require('./routes/ordenItem');
+const reclamosRouter = require('./routes/reclamo');
 
-//carrito
-const carritoRoutes = require('./routes/carrito');
-app.use('/carrito', carritoRoutes);
+// Se usan paths relativos, **NO URLs externas**
+app.use('/api/usuarios', usuariosRouter);
+app.use('/api/productos', productosRouter);
+app.use('/api/categorias', categoriasRouter);
+app.use('/api/carrito', carritoRouter);
+app.use('/api/ordenes', ordenesRouter);
+app.use('/api/orden-items', ordenItemsRouter);
+app.use('/api/reclamos', reclamosRouter);
 
+// Ruta raíz
+app.get('/', (req, res) => {
+  res.send('API SG Studio Backend está corriendo 🚀');
+});
 
-//carritoItem
-const carritoItemRoutes = require('./routes/carritoitem');
-app.use('/carritoIitem', carritoItemRoutes);
-
-
-//orden
-const ordenRoutes = require('./routes/orden');
-app.use('/ordenes', ordenRoutes);
-
-//ordenItem
-const ordenItemRoutes = require('./routes/ordenItem');
-app.use('/orden-items', ordenItemRoutes);
-
-//reclamo
-const reclamosRoutes = require('./routes/reclamo');
-app.use('/reclamos', reclamosRoutes);
-
-
-app.listen(3005, () => {
-  console.log('Servidor corriendo en http://localhost:3005');
+// Puerto
+const PORT = process.env.PORT || 3005;
+app.listen(PORT, () => {
+  console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
