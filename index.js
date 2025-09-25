@@ -3,15 +3,13 @@ const express = require('express');
 const app = express();
 app.use(express.json());
 const db = require('./models');
-const cors = require('cors');
-app.use(cors());
 require('dotenv').config();
 console.log('Base de datos actual:', db.sequelize.config.database);
 const path = require('path');
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
-
+const cors = require('cors');
 app.use(cors({
   origin: ['https://www.sgstudio.shop', 'http://localhost:3000'],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
