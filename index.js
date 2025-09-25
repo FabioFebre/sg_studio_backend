@@ -1,65 +1,54 @@
-// index.js
 const express = require('express');
+const cors = require('cors');
 const app = express();
-app.use(express.json());
 const db = require('./models');
 require('dotenv').config();
-console.log('Base de datos actual:', db.sequelize.config.database);
 const path = require('path');
+
+// Middleware JSON
+app.use(express.json());
+
+// Servir archivos estáticos
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+// Configuración de CORS
+const whitelist = [
+  'https://www.sgstudio.shop',
+  'http://localhost:3000'
+];
 
-const cors = require('cors');
-app.use(cors({
-  origin: ['https://www.sgstudio.shop', 'http://localhost:3000'],
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Permite requests sin origin (ej: Postman)
+    if (!origin) return callback(null, true);
+
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('No permitido por CORS'));
+    }
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  credentials: true
-}));
+  credentials: true // permite cookies/autenticación
+};
 
-db.sequelize.sync() 
-  .then(() => {
-    console.log('Conectado a la base de datos y sincronizado');
-  })
-  .catch((err) => {
-    console.error('Error al conectar la base de datos:', err);
-  });
+app.use(cors(corsOptions));
 
-//usuarios
-const usuariosRouter = require('./routes/usuarios');
-app.use('/usuarios', usuariosRouter);
+// Sincronización DB
+db.sequelize.sync()
+  .then(() => console.log('Conectado y sincronizado con la base de datos'))
+  .catch(err => console.error('Error DB:', err));
 
-//productos
-const productosRouter = require('./routes/producto');
-app.use('/productos', productosRouter);
+// Rutas
+app.use('/usuarios', require('./routes/usuarios'));
+app.use('/productos', require('./routes/producto'));
+app.use('/categorias', require('./routes/categoria'));
+app.use('/carrito', require('./routes/carrito'));
+app.use('/carritoitem', require('./routes/carritoitem')); // corregido typo
+app.use('/ordenes', require('./routes/orden'));
+app.use('/orden-items', require('./routes/ordenItem'));
+app.use('/reclamos', require('./routes/reclamo'));
 
-
-//categorias
-const categoriasRouter = require('./routes/categoria');
-app.use('/categorias', categoriasRouter);
-
-//carrito
-const carritoRoutes = require('./routes/carrito');
-app.use('/carrito', carritoRoutes);
-
-
-//carritoItem
-const carritoItemRoutes = require('./routes/carritoitem');
-app.use('/carritoIitem', carritoItemRoutes);
-
-
-//orden
-const ordenRoutes = require('./routes/orden');
-app.use('/ordenes', ordenRoutes);
-
-//ordenItem
-const ordenItemRoutes = require('./routes/ordenItem');
-app.use('/orden-items', ordenItemRoutes);
-
-//reclamo
-const reclamosRoutes = require('./routes/reclamo');
-app.use('/reclamos', reclamosRoutes);
-
-
-app.listen(3005, () => {
-  console.log('Servidor corriendo en http://localhost:3005');
-});
+// Puerto
+const PORT = process.env.PORT || 3005;
+app.listen(PORT, () => console.log(`Servidor corriendo en http://localhost:${PORT}`));
