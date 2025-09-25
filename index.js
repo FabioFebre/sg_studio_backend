@@ -11,6 +11,11 @@ const path = require('path');
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
+
+app.use(cors({
+  origin: 'https://www.sgstudio.shop' 
+}));
+
 db.sequelize.sync() 
   .then(() => {
     console.log('Conectado a la base de datos y sincronizado');
