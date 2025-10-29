@@ -13,9 +13,11 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Configuración de CORS
 const whitelist = [
+  'https://sgstudio.shop',
   'https://www.sgstudio.shop',
   'http://localhost:3000'
 ];
+
 
 const corsOptions = {
   origin: function (origin, callback) {
