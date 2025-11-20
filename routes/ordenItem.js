@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { OrdenItem } = require('../models');
+const { OrdenItem, Producto } = require('../models');
 
 // Crear item
 router.post('/', async (req, res) => {
@@ -12,8 +12,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-// Obtener todos los items
-// Obtener todos los items o filtrar por ordenId
+
 router.get('/', async (req, res) => {
   try {
     const { ordenId } = req.query;
@@ -26,7 +25,7 @@ router.get('/', async (req, res) => {
           {
             model: require('../models').Producto,
             as: 'producto',
-            attributes: ['nombre']
+            attributes: ['id', 'nombre']
           }
         ]
       });
